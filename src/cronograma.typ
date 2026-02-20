@@ -11,7 +11,15 @@
 // =============================================================================
 
 /// Cria um dicionário de data. Formato brasileiro: dia, mês, ano.
-#let data(dia, mes, ano) = (ano: ano, mes: mes, dia: dia)
+#let data(dia, mes, ano) = {
+  assert(type(mes) == int and mes >= 1 and mes <= 12,
+    message: "data: 'mes' deve ser inteiro entre 1 e 12, recebeu " + repr(mes))
+  assert(type(dia) == int and dia >= 1 and dia <= 31,
+    message: "data: 'dia' deve ser inteiro entre 1 e 31, recebeu " + repr(dia))
+  assert(type(ano) == int,
+    message: "data: 'ano' deve ser inteiro, recebeu " + repr(ano))
+  (ano: ano, mes: mes, dia: dia)
+}
 
 /// Retorna true se o ano é bissexto.
 #let _bissexto(ano) = {
@@ -141,7 +149,8 @@
   cabecalho,
   fonte-cabecalho,
 ) = {
-  let total-dias = _diff-dias(inicio, fim) + 1
+  let inicio-dias = _data-para-dias(inicio)
+  let total-dias = _data-para-dias(fim) - inicio-dias + 1
   assert(total-dias > 0, message: "cronograma: intervalo de datas inválido (fim deve ser após início)")
 
   let escala-x = largura-chart / total-dias  // pt por dia
@@ -159,8 +168,8 @@
       y-pos += 1
     }
 
-    let t-inicio = calc.max(0, _diff-dias(inicio, t.inicio))
-    let t-fim = calc.max(0, _diff-dias(inicio, t.fim))
+    let t-inicio = calc.max(0, _data-para-dias(t.inicio) - inicio-dias)
+    let t-fim = calc.max(0, _data-para-dias(t.fim) - inicio-dias)
     // Clamp ao range visível
     let t-inicio-c = calc.min(calc.max(t-inicio, 0), total-dias - 1)
     let t-fim-c = calc.min(calc.max(t-fim, 0), total-dias - 1)
@@ -466,14 +475,14 @@
     let prog-largura = calc.max(prog-largura, 2pt)
 
     let cor-prog = if config.cor-progresso == auto { cor.darken(25%) } else { config.cor-progresso }
+    let raio-prog = calc.min(config.raio-barra, prog-largura / 2)
 
-    // Precisamos clipar o progresso ao raio — usamos o mesmo rect mas mais curto
     rect(
       (x1, y - pad),
       (x1 + prog-largura, y - al + pad),
       fill: cor-prog.lighten(10%),
       stroke: none,
-      radius: config.raio-barra,
+      radius: raio-prog,
     )
 
     // Se o progresso não cobre toda a barra, redesenhar o contorno
@@ -532,18 +541,17 @@
 }
 
 /// Renderiza a linha "hoje"
-#let _render-hoje(inicio, config) = {
+#let _render-hoje(layout, config, inicio) = {
   import cetz.draw: *
 
   let al = config.altura-linha
   let pitch = al + config.gap
   let offset = _diff-dias(inicio, config.hoje)
-  let total-linhas = config.at("_total-linhas")
 
   if offset >= 0 {
-    let x = offset * config.at("_escala-x")
+    let x = offset * layout.escala-x
     let y-topo = 0pt
-    let y-base = -_alt-cabecalho * al - total-linhas * pitch
+    let y-base = -_alt-cabecalho * al - layout.total-linhas * pitch
 
     line(
       (x, y-topo),
@@ -654,6 +662,12 @@
   assert(type(inicio) == dictionary, message: "tarefa: 'inicio' deve ser um dict de data — use data(dia, mes, ano)")
   assert(type(fim) == dictionary, message: "tarefa: 'fim' deve ser um dict de data — use data(dia, mes, ano)")
 
+  // Validar dias para o mês específico
+  assert(inicio.dia <= _dias-no-mes(inicio.ano, inicio.mes),
+    message: "tarefa '" + nome + "': dia " + str(inicio.dia) + " inválido para mês " + str(inicio.mes))
+  assert(fim.dia <= _dias-no-mes(fim.ano, fim.mes),
+    message: "tarefa '" + nome + "': dia " + str(fim.dia) + " inválido para mês " + str(fim.mes))
+
   if not marco {
     assert(
       _data-para-dias(fim) >= _data-para-dias(inicio),
@@ -715,6 +729,20 @@
 ) = {
   assert(tarefas.len() > 0, message: "cronograma: 'tarefas' não pode estar vazio")
 
+  // Validar nomes únicos e dependências válidas
+  let _nomes-vistos = (:)
+  for t in tarefas {
+    assert(not (t.nome in _nomes-vistos),
+      message: "cronograma: nome de tarefa duplicado: '" + t.nome + "'")
+    _nomes-vistos.insert(t.nome, true)
+  }
+  for t in tarefas {
+    for dep in t.at("depende-de", default: ()) {
+      assert(dep in _nomes-vistos,
+        message: "cronograma: tarefa '" + t.nome + "' depende de '" + dep + "', que não existe")
+    }
+  }
+
   // Determinar range de datas
   let d-inicio = inicio
   let d-fim = fim
@@ -749,11 +777,9 @@
   layout(size => {
     let largura-total = if type(largura) == ratio {
       size.width * (largura / 100%)
-    } else if type(largura) == relative {
-      // Tenta extrair — fallback para size.width
-      size.width
     } else {
-      largura
+      // Resolve relative, length, etc. via measure
+      measure(line(length: largura)).width
     }
 
     // Converter largura-nomes e altura-linha para pt absoluto
@@ -848,10 +874,7 @@
 
         // Linha "hoje"
         if config.hoje != none {
-          let cfg-hoje = config
-          cfg-hoje.insert("_total-linhas", lay.total-linhas)
-          cfg-hoje.insert("_escala-x", lay.escala-x)
-          _render-hoje(d-inicio, cfg-hoje)
+          _render-hoje(lay, config, d-inicio)
         }
 
         // Bordas

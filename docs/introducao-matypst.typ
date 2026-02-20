@@ -83,6 +83,8 @@
 
 // Função auxiliar para exemplos numerados
 // Usa nome diferente de `exemplo` para evitar colisão com o ambiente matemático do Matypst
+// NOTA: cada exemplo aparece 2x (raw + chamada real) porque eval() em Typst não herda
+// imports do módulo. Ao editar exemplos, manter ambas as cópias sincronizadas.
 #let exemplo-doc-counter = counter("exemplo-doc")
 
 #let exemplo-doc(body) = {
@@ -2600,7 +2602,7 @@ Os nomes em português são fornecidos pelo Matypst. Os símbolos nativos do Typ
     table.hline(stroke: 0.5pt),
     [`+`], [$+$], [`-`], [$-$], [`vezes`], [$times$],
     [`div`], [$div$], [`maisMenos`], [$plus.minus$], [`menosMais`], [$minus.plus$],
-    [`ponto`], [$dot$], [`ast`], [$ast$], [`estrela`], [$star$],
+    [`pontoMedio`], [$dot$], [`ast`], [$ast$], [`estrela`], [$star$],
     [`circulo`], [$circle.small$], [`marcador`], [$bullet$], [`losango`], [$diamond$],
     [`eLogico`], [$and$], [`ou`], [$or$], [`ouExclusivo`], [$xor$],
     [`uniao`], [$union$], [`inter`], [$inter$], [`sem`], [$without$],

@@ -814,10 +814,10 @@
 /// Uso: `$a menosMais b$`
 #let menosMais = sym.minus.plus
 
-/// Ponto (⋅) — produto escalar ou multiplicação.
+/// Ponto central (⋅) — produto escalar ou multiplicação.
 ///
-/// Uso: `$a ponto b$`
-#let ponto = sym.dot
+/// Uso: `$a pontoMedio b$`
+#let pontoMedio = sym.dot
 
 /// Estrela (⋆).
 ///
