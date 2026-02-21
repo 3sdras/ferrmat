@@ -3955,6 +3955,51 @@ O módulo também fornece wrappers para os sub-elementos de `grid`:
   )
 ]
 
+== Mesclando células (`extensao-coluna` e `extensao-linha`)
+
+No LaTeX, mesclar células exige os pacotes `multicolumn` e `multirow`. No Typst, isso é nativo via `grid.cell(colspan: n, rowspan: n)`. O FerrMat traduz esses parâmetros:
+
+/ `extensao-coluna`: número de colunas que a célula ocupa (equivalente a `colspan` / `\multicolumn`)
+/ `extensao-linha`: número de linhas que a célula ocupa (equivalente a `rowspan` / `\multirow`)
+
+#caixa(titulo: "Exemplo: mesclagem de colunas e linhas")[
+  ```typst
+  #grade(
+    colunas: (1fr, 1fr, 1fr),
+    borda: 0.5pt,
+    recuo: 8pt,
+    alinhamento: center,
+    // Cabeçalho mesclado (3 colunas em 1)
+    celula(extensao-coluna: 3, preenchimento: luma(220))[
+      *Relatório Trimestral*
+    ],
+    [*Jan*], [*Fev*], [*Mar*],
+    // Célula mesclada em 2 linhas
+    celula(extensao-linha: 2, preenchimento: luma(240))[Vendas],
+    [150], [200],
+    [180], [220],
+  )
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #grade(
+    colunas: (1fr, 1fr, 1fr),
+    borda: 0.5pt,
+    recuo: 8pt,
+    alinhamento: center,
+    celula(extensao-coluna: 3, preenchimento: luma(220))[
+      *Relatório Trimestral*
+    ],
+    [*Jan*], [*Fev*], [*Mar*],
+    celula(extensao-linha: 2, preenchimento: luma(240))[Vendas],
+    [150], [200],
+    [180], [220],
+  )
+]
+
+Os mesmos parâmetros funcionam com `table.cell()` dentro de `table()` e `quadro()` --- basta usar `colspan` e `rowspan` (nomes nativos do Typst) diretamente.
+
 == Mapeamento de parâmetros
 
 #figure(
