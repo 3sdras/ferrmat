@@ -197,7 +197,7 @@ Enquanto o ABNTyp cuida da formatação conforme normas ABNT (capa, folha de ros
 
 O Capítulo 1 introduz os conceitos básicos do Typst e do FerrMat. O Capítulo 2 cobre as caixas decorativas (`caixa` e `caixa-estilo`). O Capítulo 3 trata da estilização de código (`codigo-inline` e `codigo-bloco`).
 
-O Capítulo 4 apresenta os fundamentos do modo matemático em Typst. O Capítulo 5 apresenta as funções matemáticas em português: letras gregas, frações, raízes, derivadas, integrais, matrizes e delimitadores. O Capítulo 6 cobre os ambientes matemáticos (teoremas, definições, demonstrações) com numeração configurável e estilos visuais. O Capítulo 7 aborda diagramas e gráficos com os pacotes `fletcher`, `cetz` e `cetz-plot`.
+O Capítulo 4 apresenta os fundamentos do modo matemático em Typst. O Capítulo 5 apresenta as funções matemáticas em português: letras gregas, frações, raízes, derivadas, integrais, matrizes e delimitadores. O Capítulo 6 cobre os ambientes matemáticos (teoremas, definições, demonstrações) com numeração configurável e estilos visuais. O Capítulo 7 aborda diagramas e gráficos com os pacotes `fletcher`, `cetz` e `cetz-plot`. O Capítulo 12 apresenta o módulo de anotações e notas marginais: notas TODO (`afazer`), notas marginais explicativas (`nota-margem`), placeholders de figuras e sistema de cores por autor.
 
 O Apêndice A contém tabelas de referência para todos os símbolos matemáticos em português fornecidos pelo FerrMat.
 
@@ -448,6 +448,149 @@ Para alterar a fonte de todo o documento, use `#set text(font: ...)`. Para alter
 #raw(block: true, lang: "typst", "#set text(font: \"Arial\")  // Todo o documento em Arial
 
 #text(font: \"Courier New\")[Texto em Courier]")
+
+=== Fontes matemáticas alternativas
+
+O Typst usa por padrão a fonte _New Computer Modern Math_ para equações. Porém, existem diversas fontes matemáticas OpenType que podem alterar significativamente a aparência do documento. Para trocar a fonte matemática, basta aplicar uma show rule:
+
+#raw(block: true, lang: "typst", "#show math.equation: set text(font: \"STIX Two Math\")")
+
+A seguir, apresentamos as principais fontes matemáticas disponíveis, organizadas por estilo. Para cada uma, mostramos como ficam os símbolos e expressões mais comuns.
+
+#block(
+  width: 100%,
+  inset: 1em,
+  stroke: 0.5pt + gray,
+  radius: 3pt,
+)[
+  #set text(size: 10pt)
+  #set par(first-line-indent: 0pt)
+  *Importante:* As fontes matemáticas devem estar instaladas no sistema para que os exemplos abaixo renderizem corretamente. Se uma fonte não estiver disponível, o Typst usará a fonte padrão (New Computer Modern Math) como fallback --- os exemplos ficarão todos idênticos. Use `typst fonts` no terminal para verificar quais estão instaladas.
+
+  *macOS (Homebrew):*
+  #raw(block: true, lang: "bash", "brew install --cask font-latin-modern-math font-libertinus-math \\
+  font-tex-gyre-pagella-math font-stix-two-math")
+
+  *Linux (manual):* Baixe os arquivos `.otf` e copie para `~/.local/share/fonts/`, depois execute `fc-cache -fv`.
+
+  As fontes Fira Math e Euler Math podem ser baixadas dos repositórios dos desenvolvedores no GitHub/CTAN. No webapp typst.app, a maioria está disponível automaticamente.
+]
+
+// Macro auxiliar para exemplos de fontes matemáticas
+// Exibe a fonte solicitada e mostra qual fonte está realmente sendo usada,
+// para que o leitor perceba se houve fallback.
+#let demo-fonte(nome-fonte, descricao, corpo-extra: none) = {
+  block(
+    width: 100%,
+    inset: (x: 1em, y: 0.8em),
+    stroke: (left: 2pt + eastern),
+    fill: eastern.lighten(97%),
+  )[
+    #set par(first-line-indent: 0pt)
+    #text(weight: "bold", size: 11pt)[#nome-fonte] #h(0.5em) #text(size: 9pt, fill: luma(100))[#descricao]
+
+    #block(inset: (top: 0.3em, bottom: 0.2em),
+      text(size: 8pt, fill: luma(120))[Verifique: #raw("typst fonts | grep \"" + nome-fonte + "\"")]
+    )
+
+    #{
+      show math.equation: set text(font: nome-fonte)
+      block(inset: (top: 0.3em))[
+        $a b c x y z$ #h(1em)
+        $A B C X Y Z$ #h(1em)
+        $alpha beta gamma delta epsilon theta lambda pi sigma omega$ #h(1em)
+        $Gamma Delta Theta Lambda Pi Sigma Omega$
+
+        $ f(x) = integral_0^infinity e^(-x^2) dif x quad sum_(n=0)^infinity frac(1, n!) quad lim_(x -> 0) frac(sin x, x) = 1 $
+
+        $ nabla times bold(F) = bold(0) quad forall epsilon > 0, exists delta > 0 quad bb(R)^n quad cal(L){f(t)} $
+      ]
+    }
+
+    #if corpo-extra != none { corpo-extra }
+  ]
+}
+
+==== Estilo serif clássico (família Times)
+
+#demo-fonte("STIX Two Math",
+  [Desenvolvida pelo consórcio STIX (AMS, AIP, IEEE, Elsevier). Cobertura de símbolos excepcional e qualidade tipográfica profissional. Ideal para quem quer algo diferente do Computer Modern sem sair do estilo acadêmico tradicional.],
+  corpo-extra: [Combina com: `"STIX Two Text"`, `"Times New Roman"`.],
+)
+
+==== Estilo Computer Modern / Latin Modern
+
+#demo-fonte("Latin Modern Math",
+  [Versão OpenType da família Latin Modern, muito próxima do padrão do LaTeX. Para quem quer o visual familiar do LaTeX com flexibilidade OpenType.],
+  corpo-extra: [Combina com: `"Latin Modern Roman"`.],
+)
+
+==== Estilo Palatino
+
+#demo-fonte("TeX Gyre Pagella Math",
+  [Combina com a fonte de texto Palatino/Pagella. Muito usada em livros acadêmicos. Aspecto mais elegante e "quente" que o Computer Modern.],
+  corpo-extra: [Combina com: `"TeX Gyre Pagella"`, `"Palatino"`.],
+)
+
+==== Estilo Libertine
+
+#demo-fonte("Libertinus Math",
+  [Combina com Libertinus Serif, que é a fonte de texto embutida no Typst por padrão. Funciona imediatamente sem instalar nada além da fonte matemática.],
+  corpo-extra: [Combina com: `"Libertinus Serif"` (padrão do Typst). _Nota:_ o Typst pode emitir o aviso "not designed for math" para esta fonte --- ele é inofensivo e a renderização funciona corretamente.],
+)
+
+==== Sans-serif
+
+#demo-fonte("Fira Math",
+  [Opção de referência para documentos sans-serif. Muito usada em apresentações e documentos modernos. A própria documentação do Typst usa esta fonte como exemplo.],
+  corpo-extra: [Combina com: `"Fira Sans"`.],
+)
+
+==== Personalidade própria
+
+#demo-fonte("Euler Math",
+  [Versão OpenType da famosa fonte de Hermann Zapf, usada no livro _Concrete Mathematics_ de Knuth. Estilo muito característico: letras matemáticas mais "redondas" e upright, bem diferente do padrão itálico.],
+  corpo-extra: [Combina com: `"Concrete"`, `"Euler"`. Ideal para quem busca um visual matematicamente distinto.],
+)
+
+==== Exemplo de configuração completa
+
+#exemplo-doc[
+  #raw(block: true, lang: "typst", "// Texto em Palatino + matemática em TeX Gyre Pagella Math
+#set text(font: \"TeX Gyre Pagella\")
+#show math.equation: set text(font: \"TeX Gyre Pagella Math\")
+
+// Texto em Libertinus (padrão do Typst) + matemática combinando
+#show math.equation: set text(font: \"Libertinus Math\")
+
+// Apresentação sans-serif
+#set text(font: \"Fira Sans\")
+#show math.equation: set text(font: \"Fira Math\")
+
+// Estilo acadêmico clássico (Times + STIX)
+#set text(font: \"STIX Two Text\")
+#show math.equation: set text(font: \"STIX Two Math\")")
+]
+
+#figure(
+  table(
+    columns: (auto, auto, 1fr),
+    inset: 6pt,
+    table.hline(stroke: 1pt),
+    [*Fonte matemática*], [*Fonte de texto*], [*Estilo*],
+    table.hline(stroke: 0.5pt),
+    [New Computer Modern Math], [New Computer Modern], [Padrão do Typst],
+    [STIX Two Math], [STIX Two Text / Times New Roman], [Serif clássico],
+    [Latin Modern Math], [Latin Modern Roman], [Computer Modern / LaTeX],
+    [TeX Gyre Pagella Math], [TeX Gyre Pagella], [Palatino],
+    [Libertinus Math], [Libertinus Serif], [Libertine],
+    [Fira Math], [Fira Sans], [Sans-serif],
+    [Euler Math], [Concrete / Euler], [Zapf / upright],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Fontes matemáticas e suas combinações recomendadas],
+  kind: table,
+)
 
 == Parágrafos e espaçamentos
 
@@ -1064,6 +1207,59 @@ Sem `quad`: $ f(x) g(x) h(x) $
 
 Com `quad`: $ f(x) quad g(x) quad h(x) $
 
+== Espaço invisível (`fantasma`)
+
+O FerrMat fornece `fantasma()` --- wrapper em português para `hide()` do Typst, equivalente ao `\phantom` do LaTeX. A função renderiza o conteúdo de forma invisível, reservando o espaço que ele ocuparia.
+
+=== Em modo texto
+
+No modo texto, `fantasma` funciona com qualquer conteúdo:
+
+#exemplo-doc[
+  #raw(block: true, lang: "typst", "Visível #fantasma[invisível] visível.")
+]
+
+Visível #fantasma[invisível] visível.
+
+=== Em modo matemático
+
+No modo matemático, `fantasma` funciona para *letras e variáveis simples*:
+
+#exemplo-doc[
+  #raw(block: true, lang: "typst", "// Esconde 'b' mas reserva o espaço
+$ a + fantasma(b) + c $")
+]
+
+$ a + fantasma(b) + c $
+
+#block(
+  width: 100%,
+  inset: 1em,
+  stroke: (left: 3pt + laranja),
+  fill: laranja.lighten(95%),
+)[
+  #set text(size: 10pt)
+  #set par(first-line-indent: 0pt)
+  *Limitação:* Diferente do `\phantom` do LaTeX, o `fantasma` do Typst *não funciona corretamente* com operadores (como `fantasma(-)`) nem com expressões complexas (como `fantasma(frac(1,2))`) no modo matemático --- esses elementos são ignorados e nenhum espaço é reservado. Essa é uma limitação do `hide()` do Typst, que opera sobre conteúdo e não sobre construções matemáticas internas.
+
+  Para alinhar múltiplas equações pelo sinal de `=`, use `&` --- é o mecanismo nativo do Typst (veja @sec:alinhamento-eq). Para reservar espaço horizontal fixo dentro de equações, use `#h(tamanho)`.
+]
+
+#figure(
+  table(
+    columns: (1fr, 1fr, 1fr),
+    stroke: none,
+    inset: 6pt,
+    table.hline(stroke: 1pt),
+    [*LaTeX*], [*FerrMat*], [*Typst nativo*],
+    table.hline(stroke: 0.5pt),
+    [`\phantom{x}`], [`fantasma(x)`], [`hide(x)` / `#hide($x$)`],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Equivalência de phantom entre LaTeX, FerrMat e Typst],
+  kind: table,
+)
+
 == Outros tipos de letras
 
 O Typst oferece várias variantes de letras para matemática:
@@ -1135,7 +1331,7 @@ Pela equação @eq:einstein e @eq:gauss, temos resultados fundamentais da físic
 
 #set math.equation(numbering: none)
 
-== Alinhamento de equações
+== Alinhamento de equações <sec:alinhamento-eq>
 
 Para alinhar múltiplas equações, use `&` para marcar o ponto de alinhamento:
 
@@ -3195,7 +3391,7 @@ O número aparece em uma linha separada acima do título. Comum para capítulos 
 #show heading.where(level: 1): formatar-secao.with(
   peso: "bold",
   tamanho: 24pt,
-  alinhamento: center,
+  alinhamento: centro,
   forma: "exibicao",
   quebra-pagina: true,
 )
@@ -3226,7 +3422,7 @@ O parâmetro `decoracao` adiciona conteúdo após o título. Útil para linhas d
   tamanho: 20pt,
   cor: eastern,
   fonte: "Libertinus Sans",
-  alinhamento: center,
+  alinhamento: centro,
 )
 ```
 
@@ -3330,7 +3526,7 @@ Para títulos sem numeração, passe `numeracao: none`:
 #show: formatar-secoes.with(
   secao-1: (
     peso: "bold", tamanho: 24pt,
-    alinhamento: center,
+    alinhamento: centro,
     forma: "exibicao",
     quebra-pagina: true,
   ),
@@ -3887,7 +4083,7 @@ A função `grade()` cria um layout de grade, equivalente a `grid()` do Typst. T
     colunas: (1fr, 1fr, 1fr),
     borda: 1pt,
     recuo: 8pt,
-    alinhamento: center,
+    alinhamento: centro,
     [*A*], [*B*], [*C*],
     [1],   [2],   [3],
     [4],   [5],   [6],
@@ -3900,7 +4096,7 @@ A função `grade()` cria um layout de grade, equivalente a `grid()` do Typst. T
     colunas: (1fr, 1fr, 1fr),
     borda: 1pt,
     recuo: 8pt,
-    alinhamento: center,
+    alinhamento: centro,
     [*A*], [*B*], [*C*],
     [1],   [2],   [3],
     [4],   [5],   [6],
@@ -3924,14 +4120,14 @@ O módulo também fornece wrappers para os sub-elementos de `grid`:
     borda: 0.5pt,
     recuo: 8pt,
     cabecalho-grade(
-      celula(alinhamento: center, preenchimento: luma(230))[*Nome*],
-      celula(alinhamento: center, preenchimento: luma(230))[*Idade*],
-      celula(alinhamento: center, preenchimento: luma(230))[*Cidade*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Nome*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Idade*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Cidade*],
     ),
     [Ana],  [25], [São Paulo],
     [João], [30], [Curitiba],
     linha-horizontal(borda: 2pt),
-    celula(extensao-coluna: 2, alinhamento: right)[*Total:*],
+    celula(extensao-coluna: 2, alinhamento: direita)[*Total:*],
     [2 pessoas],
   )
   ```
@@ -3943,14 +4139,14 @@ O módulo também fornece wrappers para os sub-elementos de `grid`:
     borda: 0.5pt,
     recuo: 8pt,
     cabecalho-grade(
-      celula(alinhamento: center, preenchimento: luma(230))[*Nome*],
-      celula(alinhamento: center, preenchimento: luma(230))[*Idade*],
-      celula(alinhamento: center, preenchimento: luma(230))[*Cidade*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Nome*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Idade*],
+      celula(alinhamento: centro, preenchimento: luma(230))[*Cidade*],
     ),
     [Ana],  [25], [São Paulo],
     [João], [30], [Curitiba],
     linha-horizontal(borda: 2pt),
-    celula(extensao-coluna: 2, alinhamento: right)[*Total:*],
+    celula(extensao-coluna: 2, alinhamento: direita)[*Total:*],
     [2 pessoas],
   )
 ]
@@ -3968,14 +4164,14 @@ No LaTeX, mesclar células exige os pacotes `multicolumn` e `multirow`. No Typst
     colunas: (1fr, 1fr, 1fr),
     borda: 0.5pt,
     recuo: 8pt,
-    alinhamento: center,
+    alinhamento: centro,
     // Cabeçalho mesclado (3 colunas em 1)
     celula(extensao-coluna: 3, preenchimento: luma(220))[
       *Relatório Trimestral*
     ],
     [*Jan*], [*Fev*], [*Mar*],
-    // Célula mesclada em 2 linhas
-    celula(extensao-linha: 2, preenchimento: luma(240))[Vendas],
+    // Célula mesclada em 2 linhas (centralizada nos dois eixos)
+    celula(extensao-linha: 2, alinhamento: centralizado, preenchimento: luma(240))[Vendas],
     [150], [200],
     [180], [220],
   )
@@ -3987,18 +4183,187 @@ No LaTeX, mesclar células exige os pacotes `multicolumn` e `multirow`. No Typst
     colunas: (1fr, 1fr, 1fr),
     borda: 0.5pt,
     recuo: 8pt,
-    alinhamento: center,
+    alinhamento: centro,
     celula(extensao-coluna: 3, preenchimento: luma(220))[
       *Relatório Trimestral*
     ],
     [*Jan*], [*Fev*], [*Mar*],
-    celula(extensao-linha: 2, preenchimento: luma(240))[Vendas],
+    celula(extensao-linha: 2, alinhamento: centralizado, preenchimento: luma(240))[Vendas],
     [150], [200],
     [180], [220],
   )
 ]
 
 Os mesmos parâmetros funcionam com `table.cell()` dentro de `table()` e `quadro()` --- basta usar `colspan` e `rowspan` (nomes nativos do Typst) diretamente.
+
+== Tabulação com `grade()` (equivalente ao `\\tabto` do LaTeX)
+
+No LaTeX, o pacote `tabto` permite posicionar texto em pontos horizontais fixos dentro de um parágrafo, com `\tabto{3cm}`. No Typst, não existe um comando `\tabto` direto, mas o mesmo efeito é obtido com `grade()` (ou `grid()`), que é mais flexível.
+
+#caixa(titulo: "Exemplo: lista alinhada (como \\tabto)")[
+  ```typst
+  #grade(
+    colunas: (4cm, 1fr),
+    espacamento-linha: 0.6em,
+    [*Nome:*],    [João da Silva],
+    [*Matéria:*], [Cálculo I],
+    [*Turma:*],   [2026.1],
+    [*Nota:*],    [8.5],
+  )
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #grade(
+    colunas: (4cm, 1fr),
+    espacamento-linha: 0.6em,
+    [*Nome:*],    [João da Silva],
+    [*Matéria:*], [Cálculo I],
+    [*Turma:*],   [2026.1],
+    [*Nota:*],    [8.5],
+  )
+]
+
+A primeira coluna com tamanho fixo (`4cm`) faz o papel do `\tabto{4cm}`: todos os valores ficam alinhados a partir daquele ponto. Para tabulações mais simples em uma única linha, pode-se usar `#h(length)` (espaço horizontal):
+
+```typst
+Nome: #h(2cm) João #h(2cm) Matrícula: #h(2cm) 2026001
+```
+
+Nome: #h(2cm) João #h(2cm) Matrícula: #h(2cm) 2026001
+
+== Blocos lado a lado (equivalente ao `minipage` do LaTeX)
+
+No LaTeX, `\begin{minipage}{0.45\textwidth}` cria uma "mini-página" com largura fixa. O uso mais comum é colocar dois blocos lado a lado (figuras, textos, equações). No Typst, `grade()` resolve isso diretamente:
+
+#caixa(titulo: "Exemplo: dois blocos lado a lado (minipage)")[
+  ```typst
+  #grade(
+    colunas: (1fr, 1fr),
+    espacamento: 1cm,
+    [
+      *Bloco esquerdo*
+
+      Este texto ocupa metade da largura,
+      como um `minipage{0.45\textwidth}`.
+      Aceita parágrafos, listas e equações.
+    ],
+    [
+      *Bloco direito*
+
+      - Item A
+      - Item B
+      - Item C
+    ],
+  )
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #grade(
+    colunas: (1fr, 1fr),
+    espacamento: 1cm,
+    [
+      *Bloco esquerdo*
+
+      Este texto ocupa metade da largura,
+      como um `minipage{0.45\textwidth}`. Aceita parágrafos, listas e equações.
+    ],
+    [
+      *Bloco direito*
+
+      - Item A
+      - Item B
+      - Item C
+    ],
+  )
+]
+
+Para larguras diferentes, ajuste as frações: `colunas: (2fr, 1fr)` dá 2/3 e 1/3. Para largura fixa: `colunas: (8cm, 1fr)`.
+
+Se precisar de um bloco isolado com largura fixa (sem grade), use `#block()` --- equivale a um `minipage` sozinho:
+
+#caixa(titulo: "Exemplo: bloco com largura fixa")[
+  ```typst
+  #block(width: 60%, stroke: 0.5pt, inset: 10pt, radius: 4pt)[
+    Este bloco ocupa 60% da largura da página.
+    Funciona como um `minipage` isolado --- aceita
+    parágrafos, listas, equações e qualquer conteúdo.
+  ]
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #block(width: 60%, stroke: 0.5pt, inset: 10pt, radius: 4pt)[
+    Este bloco ocupa 60% da largura da página.
+    Funciona como um `minipage` isolado --- aceita
+    parágrafos, listas, equações e qualquer conteúdo.
+  ]
+]
+
+#caixa(titulo: "Exemplo: bloco centralizado com fundo")[
+  ```typst
+  #align(centro)[
+    #block(
+      width: 70%,
+      fill: luma(240),
+      inset: 12pt,
+      radius: 4pt,
+    )[
+      *Resumo:* O experimento confirmou a hipótese
+      inicial com $p < 0.05$, indicando significância
+      estatística nos resultados obtidos.
+    ]
+  ]
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #align(centro)[
+    #block(
+      width: 70%,
+      fill: luma(240),
+      inset: 12pt,
+      radius: 4pt,
+    )[
+      *Resumo:* O experimento confirmou a hipótese
+      inicial com $p < 0.05$, indicando significância
+      estatística nos resultados obtidos.
+    ]
+  ]
+]
+
+== Alinhamento em português
+
+O FerrMat fornece aliases em português para todos os valores de alinhamento do Typst. Podem ser usados em qualquer parâmetro `alinhamento:` das funções de grade, e também com `set align()`, `set text()`, etc.
+
+#figure(
+  table(
+    columns: (1fr, 1fr, 1fr),
+    stroke: none,
+    inset: 5pt,
+    table.hline(stroke: 1pt),
+    [*Português*], [*Typst (English)*], [*Eixo*],
+    table.hline(stroke: 0.5pt),
+    [`esquerda`], [`left`], [Horizontal],
+    [`centro`], [`center`], [Horizontal],
+    [`direita`], [`right`], [Horizontal],
+    [`topo`], [`top`], [Vertical],
+    [`meio`], [`horizon`], [Vertical],
+    [`inferior`], [`bottom`], [Vertical],
+    table.hline(stroke: 0.5pt),
+    [`centralizado`], [`center + horizon`], [Ambos],
+    [`centro-topo`], [`center + top`], [Ambos],
+    [`centro-inferior`], [`center + bottom`], [Ambos],
+    [`esquerda-meio`], [`left + horizon`], [Ambos],
+    [`direita-meio`], [`right + horizon`], [Ambos],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Aliases de alinhamento em português],
+  kind: table,
+)
+
+Os valores simples podem ser combinados com `+` quando necessário: `esquerda + topo`, `direita + inferior`, etc. Os aliases combinados (como `centralizado`) são atalhos para as combinações mais comuns.
 
 == Mapeamento de parâmetros
 
@@ -4035,7 +4400,255 @@ Os mesmos parâmetros funcionam com `table.cell()` dentro de `table()` e `quadro
   kind: table,
 )
 
-#pagebreak()
+// ============================================================================
+// CAPÍTULO 12: ANOTAÇÕES E NOTAS MARGINAIS
+// ============================================================================
+
+#set page(margin: (top: 3cm, bottom: 2cm, left: 3cm, right: 5cm))
+
+= Anotações e Notas Marginais
+
+O FerrMat fornece um módulo de anotações para duas finalidades:
+
++ *Notas TODO* (`afazer`) --- pendências visuais para revisão, semelhantes ao pacote `todonotes` do LaTeX.
++ *Notas marginais explicativas* (`nota-margem`) --- anotações nas margens, como em livros de cálculo.
+
+Ambas integram um *sistema de cores por autor*, permitindo que múltiplos revisores tenham cores distintas automaticamente.
+
+== Registro de autores
+
+Para atribuir cores a revisores, use `registrar-autor()` ou `registrar-autores()` no preâmbulo:
+
+#caixa(titulo: "Registrando autores")[
+  ```typst
+  // Um por vez
+  #registrar-autor("Alice", blue)
+  #registrar-autor("Ricardo", red)
+
+  // Vários de uma vez
+  #registrar-autores(("Alice": blue, "Ricardo": red, "Carol": green))
+  ```
+]
+
+Autores não registrados recebem cores automaticamente de um pool cíclico (laranja, roxo, azul-petróleo, fúcsia...).
+
+== Notas `afazer`
+
+A função `afazer()` cria notas de pendência que aparecem na margem da página:
+
+/ `body`: texto da pendência (posicional)
+/ `autor`: nome do autor (usa a cor registrada)
+/ `cor`: cor manual (sobrescreve a do autor); padrão: `auto`
+/ `em-linha`: se `true`, renderiza como bloco no fluxo do texto; padrão: `false`
+/ `lado`: `esquerda`, `direita` ou `auto` (margem externa em frente-e-verso)
+/ `destaque`: trecho de texto a destacar com a cor da nota, indicando a que se refere (como no `todonotes` do LaTeX)
+
+=== Nota na margem
+
+A chamada `#afazer[...]` posiciona automaticamente a nota na margem maior da página:
+
+#caixa(titulo: "Código")[
+  ```typst
+  Este parágrafo precisa de revisão.
+  #afazer[Revisar este trecho antes da entrega.]
+  ```
+#afazer[Revisar este trecho antes da entrega.]
+]
+
+
+=== Nota na margem com autor
+
+Ao informar `autor`, o nome aparece em destaque na nota com a cor registrada:
+
+#caixa(titulo: "Código")[
+  ```typst
+  Aqui falta uma citação importante.
+  #afazer(autor: "Ricardo", cor: red)[Adicionar referência bibliográfica.]
+  ```
+#afazer(autor: "Ricardo", cor: red)[Adicionar referência bibliográfica.]
+
+]
+
+=== Nota com destaque
+
+O parâmetro `destaque` destaca o fundo do trecho ao qual a nota se refere, usando a cor da nota:
+
+#caixa(titulo: "Código")[
+  ```typst
+ #afazer(destaque: [Este trecho fica em destaque no texto])[Esta nota é sobre o trecho em destaque.]
+  ```
+#afazer(destaque: [Este trecho fica em destaque no texto])[Esta nota é sobre o trecho em destaque.]
+]
+
+=== Nota inline
+
+Com `em-linha: true`, a nota aparece como bloco no fluxo do texto:
+
+#caixa(titulo: "Código")[
+  ```typst
+  #afazer(em-linha: true, autor: "Alice")[
+    Verificar se a fórmula está correta.
+  ]
+  ```
+]
+
+#caixa(titulo: "Resultado")[
+  #afazer(em-linha: true, autor: "Alice")[
+    Verificar se a fórmula está correta.
+  ]
+]
+
+== Presets de categoria
+
+O FerrMat oferece atalhos para categorias comuns de pendência, cada um com uma cor padrão:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    stroke: none,
+    inset: 8pt,
+    table.hline(stroke: 1pt),
+    [*Função*], [*Cor*], [*Uso*],
+    table.hline(stroke: 0.5pt),
+    [`urgente()`], [vermelho], [pendências críticas],
+    [`revisar()`], [laranja], [trechos a revisar],
+    [`melhorar()`], [azul], [melhorias sugeridas],
+    [`verificar()`], [verde], [itens a verificar],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Presets de categoria para notas TODO],
+  kind: table,
+)
+
+#caixa(titulo: "Exemplo: presets")[
+  ```typst
+  #urgente(em-linha: true)[Corrigir erro na demonstração!]
+  #revisar(em-linha: true)[Reescrever este parágrafo.]
+  #melhorar(em-linha: true)[Adicionar mais exemplos.]
+  #verificar(em-linha: true)[Conferir resultado numérico.]
+  ```
+]
+
+#urgente(em-linha: true)[Corrigir erro na demonstração!]
+#revisar(em-linha: true)[Reescrever este parágrafo.]
+#melhorar(em-linha: true)[Adicionar mais exemplos.]
+#verificar(em-linha: true)[Conferir resultado numérico.]
+
+== Placeholder de figura ausente
+
+A função `figura-faltando()` cria um placeholder visual para figuras ainda não produzidas:
+
+/ `descricao`: descrição da figura (posicional)
+/ `largura`: largura do placeholder; padrão: `100%`
+/ `altura`: altura do placeholder; padrão: `4cm`
+/ `cor`: cor de fundo; padrão: `red.lighten(80%)`
+
+#caixa(titulo: "Exemplo: figura faltando")[
+  ```typst
+  #figura-faltando("Gráfico da função f(x) = sen(x)")
+  ```
+]
+
+#figura-faltando("Gráfico da função f(x) = sen(x)", altura: 2.5cm)
+
+O placeholder também é registrado como pendência e aparece na lista de tarefas.
+
+== Notas marginais com `nota-margem`
+
+A função `nota-margem()` posiciona texto explicativo na margem, como nos livros de cálculo:
+
+/ `body`: conteúdo da nota (posicional)
+/ `lado`: `esquerda`, `direita` ou `auto` (alterna em frente-e-verso)
+/ `largura`: largura da nota; padrão: `auto` (3.2cm)
+/ `dy`: deslocamento vertical; padrão: `0pt`
+/ `ancora`: label para referência cruzada
+/ `borda`: borda opcional
+/ `cor`: cor de fundo opcional
+
+#caixa(titulo: "Código da nota marginal")[
+  ```typst
+  O Teorema Fundamental do Cálculo estabelece a relação
+  entre derivação e integração.
+  #nota-margem[Veja a demonstração completa no Capítulo 5.]
+  ```
+]
+
+#caixa(titulo: "Código da nota marginal com estilo")[
+  ```typst
+  #nota-margem(
+    lado: direita,
+    borda: 0.5pt + blue,
+    cor: blue.lighten(90%),
+  )[Dica: use substituição trigonométrica.]
+  ```
+]
+
+
+
+Os códigos acima geram algo assim:
+
+O Teorema Fundamental do Cálculo estabelece a relação entre derivação e integração. #nota-margem[Veja a demonstração completa no Capítulo 5.] Esta conexão é uma das mais importantes da análise matemática.
+
+#v(0.5em)
+
+A integral de Riemann pode ser generalizada. #nota-margem(borda: 0.5pt + blue, cor: blue.lighten(90%))[Dica: use substituição trigonométrica.] Existem diversas técnicas de integração disponíveis.
+
+== Lista de pendências
+
+A função `lista-de-tarefas()` gera uma lista de todas as pendências registradas com `afazer()` e `figura-faltando()`, incluindo o número da página:
+
+#caixa(titulo: "Exemplo: lista de pendências")[
+  ```typst
+  #lista-de-tarefas(titulo: "Pendências do documento")
+  ```
+]
+
+== Ocultando anotações para versão final
+
+Para gerar a versão final sem anotações, use show-rules globais:
+
+#caixa(titulo: "Exemplo: ocultar pendências")[
+  ```typst
+  // Oculta apenas os TODOs (afazer, urgente, revisar, etc.)
+  #show: esconder-tarefas
+
+  // Oculta TODOs e notas marginais
+  #show: esconder-anotacoes
+  ```
+]
+
+A show-rule `esconder-tarefas` remove todas as notas de pendência e seus metadados. A show-rule `esconder-anotacoes` remove também as notas marginais.
+
+== Equivalência FerrMat × LaTeX
+
+#figure(
+  table(
+    columns: (1fr, 1fr, auto),
+    stroke: none,
+    inset: 8pt,
+    table.hline(stroke: 1pt),
+    [*FerrMat*], [*LaTeX*], [*Descrição*],
+    table.hline(stroke: 0.5pt),
+    [`afazer()`], [`\todo{}`], [nota TODO],
+    [`urgente()`], [`\todo[color=red]{}`], [nota urgente],
+    [`revisar()`], [`\todo[color=orange]{}`], [nota de revisão],
+    [`melhorar()`], [`\todo[color=blue]{}`], [nota de melhoria],
+    [`verificar()`], [`\todo[color=green]{}`], [nota de verificação],
+    [`afazer(em-linha: true)`], [`\todo[inline]{}`], [nota inline],
+    [`figura-faltando()`], [`\missingfigure{}`], [placeholder de figura],
+    [`nota-margem()`], [`\marginpar{}`], [nota marginal],
+    [`lista-de-tarefas()`], [`\listoftodos`], [lista de pendências],
+    [`esconder-tarefas`], [`\usepackage[disable]{todonotes}`], [ocultar TODOs],
+    [`registrar-autor()`], [---], [sistema de cores por autor],
+    [`registrar-autores()`], [---], [registro em lote],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Equivalência FerrMat × LaTeX para anotações],
+  kind: table,
+)
+
+// Restaurar margens originais
+#set page(margin: (top: 3cm, bottom: 2cm, left: 3cm, right: 2cm))
 
 // ============================================================================
 // APÊNDICE A: TABELA DE SÍMBOLOS EM PORTUGUÊS

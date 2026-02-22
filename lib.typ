@@ -7,3 +7,4 @@
 #import "src/secoes.typ": *
 #import "src/prova.typ": *
 #import "src/colunas.typ": *
+#import "src/anotacoes.typ": *

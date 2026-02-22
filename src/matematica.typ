@@ -1077,6 +1077,13 @@
 /// Uso: `$tilLargo(A B C)$`
 #let tilLargo(corpo) = math.accent(corpo, math.tilde)
 
+/// Espaço invisível — equivalente ao `\phantom` do LaTeX.
+/// Renderiza o conteúdo de forma invisível, reservando o espaço que ele ocuparia.
+/// Funciona tanto em modo matemático quanto em modo texto.
+///
+/// Uso: `$fantasma(x) + y$`  ou  `#fantasma[texto]`
+#let fantasma(corpo) = hide(corpo)
+
 /// Função por partes com alinhamento à direita.
 /// Usa `lr` + `mat` internamente para alinhar a primeira coluna à direita.
 /// Linhas separadas por `;`, colunas por `,`.
