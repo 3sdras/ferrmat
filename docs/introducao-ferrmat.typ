@@ -2209,6 +2209,164 @@ Para criar ambientes com configuração própria, use `ambiente-matematico`:
 #pagebreak()
 
 // ============================================================================
+// CAPÍTULO: BIBLIOGRAFIA
+// ============================================================================
+
+= Bibliografia
+
+O Typst suporta dois formatos de arquivo para bibliografia:
+
+- *BibLaTeX (`.bib`)* --- o formato padrão do mundo acadêmico, usado pelo #LaTeX há décadas.
+- *Hayagriva (`.yml`)* --- formato YAML criado especificamente para o Typst.
+
+
+#v(0.5cm)
+
+No momento da escrita deste documento (fevereiro de 2026), este documento recomenda exclusivamente o formato `.bib` pelos seguintes motivos:
+
+- *Ecossistema universal* --- todo gerenciador de referências (Zotero, Mendeley, JabRef) exporta `.bib`. Google Scholar, periódicos e bibliotecas digitais oferecem download direto em `.bib`. O Hayagriva não é suportado por nenhum gerenciador.
+- *Portabilidade* --- se você migrar de ou para #LaTeX, suas referências funcionam sem conversão.
+- *Comunidade* --- milhões de arquivos `.bib` existem na internet. Colegas e orientadores podem compartilhar referências sem atrito.
+- *Funcionalidade idêntica* --- o Typst trata `.bib` e `.yml` exatamente da mesma forma. Não há nenhuma vantagem funcional, até esta data, em usar Hayagriva.
+
+== O arquivo `.bib`
+
+No Typst, referências bibliográficas são gerenciadas por meio de um arquivo `.bib` (BibLaTeX) externo. Este é o mesmo formato usado pelo #LaTeX, o que facilita a migração de projetos existentes.
+
+Um arquivo `.bib` é um arquivo de texto com entradas como esta:
+
+#caixa(titulo: "Exemplo: refs.bib")[
+  ```bib
+  @book{knuth1984,
+    author    = {Donald E. Knuth},
+    title     = {The TeXbook},
+    publisher = {Addison-Wesley},
+    year      = {1984},
+  }
+
+  @article{einstein1905,
+    author  = {Albert Einstein},
+    title   = {Zur Elektrodynamik bewegter Körper},
+    journal = {Annalen der Physik},
+    volume  = {322},
+    number  = {10},
+    pages   = {891--921},
+    year    = {1905},
+  }
+  ```
+]
+
+Cada entrada tem um tipo (`@book`, `@article`, `@inproceedings`, `@thesis`, `@online`, etc.), uma chave única (`knuth1984`, `einstein1905`) e campos descritivos.
+
+== Citando no texto
+
+Para citar uma referência, use `@chave` no texto:
+
+#caixa(titulo: "Exemplo: citações no texto")[
+  ```typst
+  Segundo @knuth1984, a tipografia é uma arte.
+
+  Estudos recentes @einstein1905 mostram que...
+
+  Múltiplas citações: @knuth1984 @einstein1905.
+  ```
+]
+
+O Typst formata automaticamente a citação de acordo com o estilo escolhido (autor-data, numérico, nota de rodapé, etc.).
+
+Para controlar o formato de uma citação específica, use a função `cite()`:
+
+#caixa(titulo: "Exemplo: citação com opções")[
+  ```typst
+  // Só o número/autor, sem parênteses
+  #cite(<knuth1984>, form: "prose")
+
+  // Só o ano
+  #cite(<knuth1984>, form: "year")
+
+  // Citação completa (autor + ano)
+  #cite(<knuth1984>, form: "full")
+  ```
+]
+
+== Exibindo a lista de referências
+
+A função `bibliography()` gera a lista de referências. Coloque-a no final do documento:
+
+#caixa(titulo: "Exemplo: lista de referências")[
+  ```typst
+  // Estilo IEEE (padrão) — numerado: [1], [2], [3]
+  #bibliography("refs.bib")
+
+  // Estilo autor-data (APA)
+  #bibliography("refs.bib", style: "apa")
+
+  // Título personalizado
+  #bibliography("refs.bib", title: "Referências Bibliográficas")
+
+  // Sem título
+  #bibliography("refs.bib", title: none)
+
+  // Mostrar todas as entradas (mesmo não citadas)
+  #bibliography("refs.bib", full: true)
+  ```
+]
+
+=== Estilos de citação
+
+O Typst inclui diversos estilos. Os mais usados:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    stroke: 0.5pt,
+    inset: 5pt,
+    [*Estilo*], [*Citação no texto*], [*Área típica*],
+    [`"ieee"`], [\[1\], \[2\]], [Engenharia, Computação],
+    [`"apa"`], [(Einstein, 1905)], [Psicologia, Educação],
+    [`"chicago-notes"`], [nota de rodapé], [Humanidades, História],
+    [`"harvard-cite-them-right"`], [(Einstein, 1905)], [Ciências Sociais],
+    [`"american-physics-society"`], [\[1\]], [Física],
+    [`"mla"`], [(Einstein 891)], [Literatura, Artes],
+  ),
+  caption: [Estilos de citação mais comuns],
+  kind: table,
+)
+
+Para normas ABNT, use o *ABNTyp* --- o pacote irmão do FerrMat, que cuida de toda a formatação conforme as normas brasileiras, incluindo citações e referências bibliográficas no padrão ABNT (NBR 6023 e NBR 10520).
+
+== Gerenciadores de referências
+
+Editar arquivos `.bib` manualmente é viável para documentos com poucas referências, mas para trabalhos acadêmicos com dezenas ou centenas de fontes, um gerenciador de referências é essencial.
+
+=== Zotero (recomendado)
+
+O Zotero#footnote[https:\/\/www.zotero.org] é um gerenciador de referências gratuito e de código aberto. Suas principais vantagens:
+
+- *Captura automática* --- salva referências direto do navegador (Google Scholar, periódicos, bibliotecas digitais) com um clique.
+- *Organização* --- pastas, tags, busca, anotações em PDF.
+- *Exportação `.bib`* --- exporta coleções inteiras para BibLaTeX.
+- *Better BibTeX* --- plugin#footnote[https:\/\/retorque.re/zotero-better-bibtex/] que gera chaves de citação consistentes e mantém o arquivo `.bib` atualizado automaticamente sempre que a coleção muda.
+- *Sincronização com Typst* --- o Typst (versão web Pro) oferece integração direta com Zotero, sincronizando automaticamente a biblioteca para um arquivo `.bib` no projeto.
+
+==== Fluxo de trabalho recomendado
+
++ Instale o Zotero e o plugin Better BibTeX.
++ Colete referências no Zotero (navegador, DOI, ISBN, PDF).
++ Configure a exportação automática: clique com o botão direito na coleção → _Export Collection_ → formato _Better BibLaTeX_ → marque _Keep updated_.
++ Salve o arquivo `.bib` exportado na pasta do seu projeto Typst.
++ No documento, use `@chave` para citar e `#bibliography("refs.bib")` para gerar a lista.
+
+O arquivo `.bib` será atualizado automaticamente pelo Better BibTeX sempre que você adicionar, editar ou remover referências no Zotero.
+
+=== Outros gerenciadores
+
+- *Mendeley*#footnote[https:\/\/www.mendeley.com] --- alternativa popular, também exporta `.bib`. Integração direta com Typst (versão web Pro).
+- *JabRef*#footnote[https:\/\/www.jabref.org] --- editor de arquivos `.bib` de código aberto, ideal para quem prefere editar o `.bib` diretamente com interface gráfica.
+
+#pagebreak()
+
+// ============================================================================
 // CAPÍTULO 7: DIAGRAMAS E GRÁFICOS
 // ============================================================================
 
@@ -4649,6 +4807,756 @@ A show-rule `esconder-tarefas` remove todas as notas de pendência e seus metada
 
 // Restaurar margens originais
 #set page(margin: (top: 3cm, bottom: 2cm, left: 3cm, right: 2cm))
+
+// ============================================================================
+// NÚMEROS, UNIDADES E QUANTIDADES
+// ============================================================================
+
+= Números, unidades e quantidades
+
+O módulo `unidades.typ` fornece atalhos para modo matemático e funções para formatação de números, unidades SI e quantidades físicas, com padrões brasileiros. É o equivalente do pacote `siunitx` do #LaTeX.
+
+== Atalhos para modo matemático
+
+A abordagem mais prática para o dia a dia: comandos curtos que funcionam diretamente dentro de `$...$`, sem precisar sair do modo matemático.
+
+=== Notação científica (`ee`)
+
+A função `ee(n)` produz $times 10^n$ --- basta usá-la após o número dentro do modo matemático:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    align: (left, center, center),
+    stroke: 0.5pt,
+    inset: 6pt,
+    [*Typst puro*], [*Com atalho*], [*Resultado*],
+    [`$6,022 times 10^23$`], [`$6,022 ee(23)$`], [$6,022 ee(23)$],
+    [`$1,602 times 10^(-19)$`], [`$1,602 ee(-19)$`], [$1,602 ee(-19)$],
+    [`$2,998 times 10^8$`], [`$2,998 ee(8)$`], [$2,998 ee(8)$],
+  ),
+  caption: [Notação científica com `ee()`],
+  kind: table,
+)
+
+=== Atalhos de unidades
+
+Variáveis pré-definidas para unidades comuns, com espaço fino embutido para uso direto após o número:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    align: (left, center, center),
+    stroke: 0.5pt,
+    inset: 6pt,
+    [*Typst puro*], [*Com atalho*], [*Resultado*],
+    [`$9,8 "m/s"^2$`], [`$9,8 mss$`], [$9,8 mss$],
+    [`$25 "m/s"$`], [`$25 ms$`], [$25 ms$],
+    [`$25 "m"^2$`], [`$25 msq$`], [$25 msq$],
+    [`$10 "m"^3$`], [`$10 mcb$`], [$10 mcb$],
+    [`$120 "km/h"$`], [`$120 kmh$`], [$120 kmh$],
+    [`$1000 "kg/m"^3$`], [`$1000 kgm$`], [$1000 kgm$],
+    [`$6,022 times 10^23 "mol"^(-1)$`], [`$6,022 ee(23) molinv$`], [$6,022 ee(23) molinv$],
+    [`$8,314 "J/mol"$`], [`$8,314 jmol$`], [$8,314 jmol$],
+  ),
+  caption: [Atalhos de unidades para modo matemático],
+  kind: table,
+)
+
+#figure(
+  table(
+    columns: (auto, auto),
+    stroke: 0.5pt,
+    inset: 5pt,
+    [*Atalho*], [*Unidade*],
+    [`mss`], [m/s² (aceleração)],
+    [`ms`], [m/s (velocidade)],
+    [`msq`], [m² (área)],
+    [`mcb`], [m³ (volume)],
+    [`kmh`], [km/h (velocidade)],
+    [`kgm`], [kg/m³ (densidade)],
+    [`molinv`], [mol⁻¹],
+    [`jmol`], [J/mol (energia molar)],
+  ),
+  caption: [Lista de atalhos de unidades disponíveis],
+  kind: table,
+)
+
+=== Unidades simples com aspas
+
+Para unidades que não têm atalho, basta usar aspas no modo matemático --- isso produz texto _upright_ (não itálico), que é o correto para unidades:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    align: (left, center, center),
+    stroke: 0.5pt,
+    inset: 6pt,
+    [*Código*], [*Sem aspas*], [*Com aspas*],
+    [`$220 "V"$`], [$220 V$], [$220 "V"$],
+    [`$"km"$`], [$k m$], [$"km"$],
+    [`$"MHz"$`], [$M H z$], [$"MHz"$],
+  ),
+  caption: [Aspas no modo matemático: texto _upright_ correto para unidades],
+  kind: table,
+)
+
+Sem aspas, as letras ficam em itálico (como variáveis); com aspas, ficam _upright_ (como unidades devem ser).
+
+== Agrupamento de dígitos (`num`)
+
+A função `num()` é útil para números grandes que precisam de agrupamento de dígitos (espaço fino como separador de milhar, padrão SI/INMETRO).
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    align: (left, center, center),
+    stroke: 0.5pt,
+    inset: 6pt,
+    [*Código*], [*Sem `num()`*], [*Com `num()`*],
+    [`num(1234567.89)`], [1234567.89], [#num(1234567.89)],
+    [`num(10000)`], [10000], [#num(10000)],
+  ),
+  caption: [Agrupamento de dígitos com `num()`],
+  kind: table,
+)
+
+A função troca automaticamente o ponto por vírgula decimal e usa o sinal de menos tipográfico (#_emenos) em vez do hífen. Para notação científica, prefira o atalho `ee()` no modo matemático.
+
+// ============================================================================
+// PERSONALIZAÇÃO DE NUMERAÇÕES
+// ============================================================================
+
+= Personalização de numerações
+
+No Typst, cada elemento numerável (páginas, seções, equações, figuras, tabelas, notas de rodapé) tem sua numeração controlada por `set` rules com o parâmetro `numbering`.
+
+Note que os comandos abaixo usam os nomes originais do Typst em inglês (`heading`, `numbering`, `counter`, `figure`, `footnote`, etc.). O FerrMat não cria aliases em português para esses nomes porque:
+
+- *Parâmetros não podem ser renomeados* --- `numbering`, `update`, `where` são nomes fixos da linguagem. Para traduzí-los, seria preciso criar funções _wrapper_ que encapsulem todos os parâmetros de cada elemento, e que quebrariam a cada atualização do Typst.
+- *São escritos uma única vez* --- comandos como `#set math.equation(numbering: "(1)")` aparecem no preâmbulo do documento. Traduzir economizaria zero digitação no dia a dia.
+- *Compatibilidade com a documentação oficial* --- todo tutorial, fórum e referência do Typst usa os nomes em inglês. Aliases em português isolariam o usuário desse ecossistema.
+
+O FerrMat traduz quando cria funcionalidade nova (`caixa()`, `ee()`, `mss`) --- não quando apenas renomeia o que já existe no Typst.
+
+Os formatos de numeração mais comuns:
+
+#figure(
+  table(
+    columns: (auto, auto),
+    stroke: 0.5pt,
+    inset: 5pt,
+    [*Formato*], [*Resultado*],
+    [`"1"`], [1, 2, 3, ...],
+    [`"i"`], [i, ii, iii, ...],
+    [`"I"`], [I, II, III, ...],
+    [`"a"`], [a, b, c, ...],
+    [`"A"`], [A, B, C, ...],
+    [`"(1)"`], [(1), (2), (3), ...],
+    [`"1.1"`], [1.1, 1.2, 2.1, ...],
+    [`none`], [sem numeração],
+  ),
+  caption: [Formatos de numeração disponíveis],
+  kind: table,
+)
+
+== Páginas
+
+#caixa(titulo: "Numeração de páginas")[
+  ```typst
+  // Arábico (padrão)
+  #set page(numbering: "1")
+
+  // Romano minúsculo (para pré-textual)
+  #set page(numbering: "i")
+
+  // Sem numeração (capa, folha de rosto)
+  #set page(numbering: none)
+
+  // Formato "página X de Y"
+  #set page(numbering: "1 / 1")
+  ```
+]
+
+== Seções (headings)
+
+#caixa(titulo: "Numeração de seções")[
+  ```typst
+  // Numeração multinível: 1, 1.1, 1.1.1
+  #set heading(numbering: "1.1")
+
+  // Sem numeração
+  #set heading(numbering: none)
+
+  // Formato com ponto final: 1., 1.1., 1.1.1.
+  #set heading(numbering: "1.1.")
+
+  // Um heading específico sem número
+  #heading(numbering: none)[Referências]
+  ```
+]
+
+== Equações
+
+#caixa(titulo: "Numeração de equações")[
+  ```typst
+  // Ativar numeração
+  #set math.equation(numbering: "(1)")
+
+  // Com prefixo de seção: (1.1), (1.2), (2.1)
+  #set math.equation(numbering: num =>
+    let h = counter(heading).get()
+    [(#h.first().#num)]
+  )
+
+  // Desativar
+  #set math.equation(numbering: none)
+  ```
+]
+
+== Figuras e tabelas
+
+#caixa(titulo: "Numeração de figuras e tabelas")[
+  ```typst
+  // Figuras: "Figura 1", "Figura 2"
+  #set figure(numbering: "1")
+
+  // Tabelas: "Tabela I", "Tabela II"
+  #set figure.where(kind: table, numbering: "I")
+
+  // Com prefixo de seção: "Figura 1.1"
+  #set figure(numbering: "1.1")
+
+  // Sem numeração
+  #set figure(numbering: none)
+  ```
+]
+
+== Notas de rodapé
+
+#caixa(titulo: "Numeração de notas de rodapé")[
+  ```typst
+  // Arábico (padrão)
+  #set footnote(numbering: "1")
+
+  // Símbolos: *, †, ‡, §
+  #set footnote(numbering: "*")
+
+  // Reiniciar contador por página
+  #set footnote(numbering: "1")
+  // (requer counter(footnote).update(0) em header)
+  ```
+]
+
+== Listas ordenadas
+
+#caixa(titulo: "Numeração de listas")[
+  ```typst
+  // Padrão: 1., 2., 3.
+  + Primeiro
+  + Segundo
+
+  // Letras: a), b), c)
+  #set enum(numbering: "a)")
+
+  // Romano: i., ii., iii.
+  #set enum(numbering: "i.")
+
+  // Multinível
+  #set enum(numbering: "1.a.i.")
+  ```
+]
+
+== Reiniciando contadores
+
+Para reiniciar qualquer contador no meio do documento:
+
+#caixa(titulo: "Reiniciar contadores")[
+  ```typst
+  // Reiniciar numeração de páginas
+  #counter(page).update(1)
+
+  // Reiniciar numeração de equações
+  #counter(math.equation).update(0)
+
+  // Reiniciar numeração de figuras
+  #counter(figure).update(0)
+
+  // Reiniciar numeração de headings
+  #counter(heading).update(0)
+  ```
+]
+
+// ============================================================================
+// CAPÍTULO: ÍNDICE REMISSIVO
+// ============================================================================
+
+= Índice Remissivo
+
+O FerrMat fornece um sistema de índice remissivo (equivalente ao `makeidx` do #LaTeX) com duas funções: `irem()` para marcar termos ao longo do texto, e `imprimir-indice()` para gerar o índice com os termos e suas páginas.
+
+== Marcando termos
+
+Use `irem("termo")` para marcar um termo no ponto do texto onde ele aparece. A marcação é invisível --- não altera o texto:
+
+#caixa(titulo: "Exemplo: marcando termos")[
+  ```typst
+  A #irem("derivada") derivada é um conceito
+  fundamental do #irem("cálculo") cálculo.
+  ```
+]
+
+=== Subtermos
+
+Para criar subentradas (ex: "derivada → parcial"), use o parâmetro `sub`:
+
+#caixa(titulo: "Exemplo: subtermos")[
+  ```typst
+  A #irem("derivada", sub: "parcial") derivada parcial
+  generaliza o conceito para várias variáveis.
+
+  A #irem("derivada", sub: "direcional") derivada direcional
+  mede a taxa de variação em uma direção.
+  ```
+  No índice, aparece como:
+
+  derivada, 1, 5 \
+  #h(1.5em) direcional, 8 \
+  #h(1.5em) parcial, 3
+]
+
+=== Remissivas ("ver")
+
+Para redirecionar um termo a outro, use o parâmetro `ver`:
+
+#caixa(titulo: "Exemplo: remissiva")[
+  ```typst
+  #irem("velocidade", ver: "cinemática")
+  ```
+  No índice, aparece como:
+
+  velocidade, _ver_ cinemática
+]
+
+=== Termo em negrito (`irem-def`)
+
+Para marcar a definição de um termo --- exibindo-o em negrito no texto e registrando no índice ao mesmo tempo:
+
+#caixa(titulo: "Exemplo: definição")[
+  ```typst
+  #irem-def("continuidade") é a propriedade de uma
+  função sem saltos nem interrupções.
+  ```
+  No texto aparece: *continuidade* é a propriedade...
+]
+
+== Gerando o índice
+
+Coloque `imprimir-indice()` no final do documento:
+
+#caixa(titulo: "Exemplo: gerar o índice")[
+  ```typst
+  #imprimir-indice()
+
+  // Opções:
+  #imprimir-indice(titulo: "Índice de Termos")
+  #imprimir-indice(titulo: none)  // sem título
+  #imprimir-indice(colunas: 3)    // 3 colunas
+  ```
+]
+
+== Exemplo completo
+
+O código abaixo mostra um documento mínimo com índice remissivo:
+
+#caixa(titulo: "Documento com índice remissivo")[
+  ```typst
+  #import "lib.typ": *
+  #set page(numbering: "1")
+
+  = Capítulo 1
+
+  A #irem("derivada") derivada é um conceito
+  fundamental do #irem("cálculo") cálculo.
+  A #irem("derivada", sub: "parcial") derivada
+  parcial estende o conceito.
+  O #irem("limite") limite é a base do cálculo.
+
+  = Capítulo 2
+
+  A #irem("integral") integral é a operação inversa
+  da #irem("derivada") derivada.
+  A #irem("integral", sub: "definida") integral definida
+  calcula áreas.
+  #irem-def("continuidade") é a propriedade de
+  funções sem saltos.
+  #irem("velocidade", ver: "cinemática")
+
+  = Capítulo 3
+
+  O #irem("cálculo") cálculo é utilizado em toda a física.
+  #irem("função") Funções são o objeto central.
+
+  #imprimir-indice()
+  ```
+]
+
+O resultado é um índice como este:
+
+#line(length: 100%, stroke: 0.5pt)
+
+#block(inset: (x: 2em, y: 1em))[
+  #set par(first-line-indent: 0pt)
+  #text(weight: "bold", size: 1.3em)[Índice Remissivo]
+  #v(0.3em)
+
+  #columns(2, gutter: 1em)[
+    #text(weight: "bold", size: 1.1em)[C]
+    #v(0.2em)
+    cálculo, 1, 3 \
+    continuidade, 2
+    #v(0.5em)
+
+    #text(weight: "bold", size: 1.1em)[D]
+    #v(0.2em)
+    derivada, 1, 2 \
+    #h(1.5em) parcial, 1
+    #v(0.5em)
+
+    #text(weight: "bold", size: 1.1em)[F]
+    #v(0.2em)
+    função, 3
+    #v(0.5em)
+
+    #text(weight: "bold", size: 1.1em)[I]
+    #v(0.2em)
+    integral, 2 \
+    #h(1.5em) definida, 2
+    #v(0.5em)
+
+    #text(weight: "bold", size: 1.1em)[L]
+    #v(0.2em)
+    limite, 1
+    #v(0.5em)
+
+    #text(weight: "bold", size: 1.1em)[V]
+    #v(0.2em)
+    velocidade, _ver_ cinemática
+  ]
+]
+
+#line(length: 100%, stroke: 0.5pt)
+
+== Equivalência FerrMat × LaTeX
+
+#figure(
+  table(
+    columns: (1fr, 1fr, auto),
+    stroke: none,
+    inset: 8pt,
+    table.hline(stroke: 1pt),
+    [*FerrMat*], [*LaTeX*], [*Descrição*],
+    table.hline(stroke: 0.5pt),
+    [`irem("termo")`], [`\index{termo}`], [marca termo no índice],
+    [`irem("t", sub: "s")`], [`\index{t!s}`], [subtermo],
+    [`irem("t", ver: "outro")`], [`\index{t|see{outro}}`], [remissiva "ver"],
+    [`irem-def("termo")`], [`\index{termo}\textbf{termo}`], [definição em negrito],
+    [`imprimir-indice()`], [`\printindex`], [gera o índice],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Equivalência FerrMat × LaTeX para índice remissivo],
+  kind: table,
+)
+
+#pagebreak()
+
+// ============================================================================
+// CAPÍTULO: CONTROLE DE VERSÃO COM GITHUB
+// ============================================================================
+
+= Controle de versão com GitHub
+
+Se você já perdeu um arquivo, sobrescreveu uma versão boa por acidente, ou precisou enviar um documento por e-mail com nomes como `TCC_final_v3_revisado_FINAL2.typ`, este capítulo é para você.
+
+== O problema
+
+Ao trabalhar em um documento longo --- uma apostila, um TCC, uma prova --- é comum querer:
+
+- Voltar a uma versão anterior que funcionava.
+- Manter uma versão "estável" enquanto experimenta mudanças.
+- Compartilhar o projeto com um colega ou orientador.
+
+Editores online como o Overleaf (para #LaTeX) e o typst.app oferecem colaboração, mas com limitações:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    stroke: 0.5pt,
+    inset: 5pt,
+    [*Plataforma*], [*Plano gratuito*], [*Limitação*],
+    [Overleaf], [1 colaborador], [Máximo 2 pessoas por projeto],
+    [typst.app], [sem limite explícito], [200 MB, sem pastas, sem comentários],
+    [GitHub], [ilimitado], [Repositórios públicos ou privados, sem limite de colaboradores],
+  ),
+  caption: [Comparação de colaboração entre plataformas],
+  kind: table,
+)
+
+O *GitHub* resolve todos esses problemas de graça: salva o histórico completo do projeto, permite criar versões paralelas e compartilhar com quantos colaboradores quiser.
+
+== O que é o Git e o GitHub
+
+- *Git* é um sistema que registra cada "foto" (chamada _commit_) do seu projeto. Você pode voltar a qualquer foto anterior a qualquer momento.
+- *GitHub*#footnote[https:\/\/github.com] é um site que guarda essas fotos na nuvem, permitindo acessar de qualquer computador e compartilhar com outras pessoas.
+
+Pense assim: o Git é a câmera; o GitHub é o álbum de fotos online.
+
+Existem duas formas de usar o Git: pelo *GitHub Desktop* (aplicativo visual, recomendado para iniciantes) ou pela *linha de comando*. Este capítulo cobre ambas.
+
+== Preparação
+
++ Crie uma conta gratuita em https:\/\/github.com.
++ Escolha uma das opções abaixo:
+  - *GitHub Desktop* (visual) --- recomendado para quem não tem experiência com terminal.
+  - *Git pela linha de comando* --- para quem já usa terminal ou prefere mais controle.
+
+// --------------------------------------------------------------------------
+
+== GitHub Desktop (interface visual)
+
+O GitHub Desktop#footnote[https:\/\/desktop.github.com] é um aplicativo gratuito para Windows e macOS que permite fazer tudo com cliques --- sem precisar abrir um terminal. Ele já inclui o Git embutido.
+
+=== Instalação
+
++ Baixe em https:\/\/desktop.github.com e instale.
++ Abra o aplicativo e faça login com sua conta do GitHub.
++ O aplicativo pedirá seu nome e e-mail (para identificar suas versões). Preencha e clique em *Finish*.
+
+=== Criando um repositório
+
++ No aplicativo, clique em *File* → *New Repository*.
++ Dê um nome (ex: `minha-apostila`).
++ Em *Local Path*, escolha a pasta onde estão seus arquivos `.typ`.
++ Clique em *Create Repository*.
+
+Se seus arquivos já existem na pasta, o GitHub Desktop mostrará todos eles como "mudanças" prontas para serem salvas.
+
+=== Salvando uma versão (commit)
+
+Sempre que modificar seus arquivos, o GitHub Desktop mostra as mudanças no painel esquerdo:
+
++ Na lista de arquivos modificados, marque os que deseja salvar (ou deixe todos marcados).
++ No campo *Summary* (embaixo, à esquerda), escreva uma descrição curta do que mudou (ex: "Adicionar capítulo 3").
++ Clique em *Commit to main*.
+
+Repita isso sempre que quiser salvar o estado atual do projeto.
+
+=== Enviando para o GitHub
+
+Após o primeiro commit, clique em *Publish repository* (barra superior). Escolha se o repositório será *privado* (só você e convidados veem) ou público. Clique em *Publish Repository*.
+
+A partir de agora, para enviar novas versões basta clicar em *Push origin* na barra superior após cada commit.
+
+=== Vendo o histórico
+
+Clique na aba *History* (ao lado de *Changes*) para ver a lista de todas as versões salvas, com data, descrição e os arquivos que mudaram em cada uma. Para ver o conteúdo de uma versão anterior, clique nela.
+
+=== Voltando a uma versão anterior
+
+Clique com o botão direito em um commit no histórico e escolha *Revert Changes in Commit*. Isso cria um novo commit que desfaz as mudanças daquele ponto, sem apagar o histórico.
+
+=== Compartilhando com colaboradores
+
++ No site do GitHub, abra o repositório.
++ Vá em *Settings* → *Collaborators* → *Add people*.
++ Digite o nome de usuário ou e-mail da pessoa.
++ A pessoa aceita o convite, instala o GitHub Desktop, e clica em *File* → *Clone Repository* para baixar o projeto.
+
+Não há limite de colaboradores, mesmo no plano gratuito.
+
+==== Como o colaborador trabalha
+
++ Ao abrir o GitHub Desktop, clique em *Fetch origin* para verificar se há atualizações.
++ Se houver, clique em *Pull origin* para baixá-las.
++ Trabalhe normalmente nos arquivos, faça commits e clique em *Push origin* para enviar.
+
+=== Branches: versões paralelas
+
+Um _branch_ (ramificação) permite experimentar mudanças sem afetar a versão principal:
+
++ Na barra superior, clique em *Current Branch* → *New Branch*.
++ Dê um nome (ex: `reorganizar-capitulos`) e clique em *Create Branch*.
++ Trabalhe normalmente e faça commits --- tudo fica nesse branch.
++ Para voltar à versão principal, clique em *Current Branch* → *main*.
++ Se gostou do resultado, clique em *Branch* → *Merge into Current Branch*, selecione o branch e confirme.
+
+// --------------------------------------------------------------------------
+
+== Git pela linha de comando
+
+Para quem prefere usar o terminal, o Git oferece controle total com comandos curtos. Esta seção cobre as mesmas operações do GitHub Desktop.
+
+=== Instalação
+
+- *Windows*: baixe em https:\/\/git-scm.com e instale. Marque a opção "Git Bash" durante a instalação.
+- *macOS*: abra o Terminal e digite `git --version`. Se não estiver instalado, o sistema oferecerá instalá-lo automaticamente.
+- *Linux*: `sudo apt install git` (Ubuntu/Debian) ou `sudo dnf install git` (Fedora).
+
+Após instalar, configure seu nome e e-mail (uma única vez):
+
+#caixa(titulo: "Configuração inicial do Git")[
+  ```bash
+  git config --global user.name "Seu Nome"
+  git config --global user.email "seu@email.com"
+  ```
+]
+
+=== Fluxo básico: salvando versões
+
+Imagine que você tem uma pasta `minha-apostila/` com seus arquivos `.typ`:
+
+#caixa(titulo: "1. Iniciar o controle de versão (só na primeira vez)")[
+  ```bash
+  cd minha-apostila
+  git init
+  ```
+  Isso cria uma pasta oculta `.git/` que guarda todo o histórico. Seus arquivos não são alterados.
+]
+
+#caixa(titulo: "2. Salvar uma versão (commit)")[
+  ```bash
+  git add .
+  git commit -m "Adicionar capítulo 3"
+  ```
+  - `git add .` prepara todos os arquivos modificados.
+  - `git commit -m "..."` tira a "foto" com uma descrição do que mudou.
+
+  Repita isso sempre que quiser salvar o estado atual: após terminar uma seção, corrigir erros, etc.
+]
+
+#caixa(titulo: "3. Ver o histórico")[
+  ```bash
+  git log --oneline
+  ```
+  Mostra a lista de todas as versões salvas:
+  ```
+  a1b2c3d Adicionar capítulo 3
+  e4f5g6h Corrigir exercícios do capítulo 2
+  i7j8k9l Versão inicial
+  ```
+]
+
+#caixa(titulo: "4. Voltar a uma versão anterior")[
+  ```bash
+  git checkout i7j8k9l
+  ```
+  Substitua `i7j8k9l` pelo código da versão desejada (visível no `git log`). Para voltar à versão mais recente:
+  ```bash
+  git checkout main
+  ```
+]
+
+=== Enviando para o GitHub
+
+#caixa(titulo: "1. Criar o repositório no GitHub")[
+  - Acesse https:\/\/github.com e clique em *New repository*.
+  - Dê um nome (ex: `minha-apostila`).
+  - Escolha *Private* (só você e quem convidar podem ver).
+  - Clique em *Create repository*.
+  - O GitHub mostrará comandos para conectar. Copie a linha que começa com `git remote add`.
+]
+
+#caixa(titulo: "2. Conectar e enviar")[
+  ```bash
+  git remote add origin https://github.com/seu-usuario/minha-apostila.git
+  git push -u origin main
+  ```
+  A partir de agora, para enviar novas versões basta:
+  ```bash
+  git push
+  ```
+]
+
+=== Compartilhando com colaboradores
+
+Para convidar alguém:
+
++ No GitHub, abra o repositório.
++ Vá em *Settings* → *Collaborators* → *Add people*.
++ Digite o nome de usuário ou e-mail da pessoa.
++ A pessoa aceita o convite e pode editar o projeto.
+
+Não há limite de colaboradores, mesmo no plano gratuito.
+
+==== Como o colaborador trabalha
+
+#caixa(titulo: "Colaborador: baixar o projeto (primeira vez)")[
+  ```bash
+  git clone https://github.com/seu-usuario/minha-apostila.git
+  cd minha-apostila
+  ```
+]
+
+#caixa(titulo: "Colaborador: pegar atualizações")[
+  ```bash
+  git pull
+  ```
+]
+
+#caixa(titulo: "Colaborador: enviar suas mudanças")[
+  ```bash
+  git add .
+  git commit -m "Revisar exercícios do capítulo 2"
+  git push
+  ```
+]
+
+=== Branches: versões paralelas
+
+Um _branch_ (ramificação) permite trabalhar em mudanças experimentais sem afetar a versão principal:
+
+#caixa(titulo: "Criar e usar um branch")[
+  ```bash
+  # Criar um branch e mudar para ele
+  git checkout -b reorganizar-capitulos
+
+  # Trabalhar normalmente, fazer commits...
+  git add .
+  git commit -m "Testar nova ordem dos capítulos"
+
+  # Voltar para a versão principal
+  git checkout main
+
+  # Se gostou do resultado, juntar as mudanças
+  git merge reorganizar-capitulos
+  ```
+]
+
+// --------------------------------------------------------------------------
+
+== Resumo: GitHub Desktop vs. linha de comando
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    stroke: 0.5pt,
+    inset: 5pt,
+    [*Ação*], [*GitHub Desktop*], [*Linha de comando*],
+    [Iniciar repositório], [File → New Repository], [`git init`],
+    [Salvar versão], [Escrever resumo + Commit], [`git add . && git commit -m "..."`],
+    [Ver histórico], [Aba History], [`git log --oneline`],
+    [Desfazer versão], [Botão direito → Revert], [`git checkout` _código_],
+    [Enviar ao GitHub], [Push origin], [`git push`],
+    [Baixar atualizações], [Pull origin], [`git pull`],
+    [Baixar projeto], [File → Clone Repository], [`git clone` _url_],
+    [Criar branch], [Current Branch → New Branch], [`git checkout -b` _nome_],
+    [Juntar branch], [Branch → Merge into Current], [`git merge` _nome_],
+  ),
+  caption: [Equivalência entre GitHub Desktop e linha de comando],
+  kind: table,
+)
+
+#pagebreak()
 
 // ============================================================================
 // APÊNDICE A: TABELA DE SÍMBOLOS EM PORTUGUÊS
