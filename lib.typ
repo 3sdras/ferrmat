@@ -5,6 +5,7 @@
 #import "src/cronograma.typ": *
 #import "src/pagina.typ": *
 #import "src/secoes.typ": *
+#import "src/temas.typ": *
 #import "src/prova.typ": *
 #import "src/colunas.typ": *
 #import "src/anotacoes.typ": *

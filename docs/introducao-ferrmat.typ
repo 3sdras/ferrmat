@@ -3749,6 +3749,305 @@ Outro capítulo...
 ```
 
 // ============================================================================
+// TEMAS PRONTOS DE HEADINGS
+// ============================================================================
+
+#pagebreak()
+
+= Temas Prontos de Headings
+
+O módulo `src/temas.typ` oferece um sistema completo de headings visuais
+inspirado em design moderno de páginas web. A arquitetura separa dois
+conceitos independentes --- *paletas de cores* e *estilos de layout* ---
+que se combinam livremente:
+
+#align(center)[
+  #block(stroke: 0.5pt + luma(200), radius: 4pt, inset: 10pt, width: auto, {
+    set text(size: 10pt)
+    [*paleta* (10 opções) × *estilo* (7 opções) = *70 combinações possíveis* · *34 temas prontos*]
+  })
+]
+
+O módulo já entrega 34 temas prontos com nomes descritivos
+(`tema-revista-vinho`, `tema-centralizado-pastel`, etc.), mas qualquer
+combinação de paleta e estilo pode ser montada manualmente.
+
+== Paletas de Cores
+
+Uma paleta define cinco papéis cromáticos usados pelos estilos:
+
+#figure(
+  table(
+    columns: (auto, 1fr),
+    stroke: none, inset: 6pt,
+    table.hline(stroke: 1pt),
+    [*Papel*], [*Uso*],
+    table.hline(stroke: 0.5pt),
+    [*primária*],  [Fundos de faixas, barras laterais, badges — a cor dominante.],
+    [*secundária*],[Acentos de contraste: número dentro da faixa, sublinhas curtas, bordas de badge.],
+    [*texto*],     [Cor dos títulos nas formas sem fundo próprio (bloco, barra, etc.).],
+    [*fundo*],     [Preenchimento sutil da forma `"barra"` quando ativo.],
+    [*sutil*],     [Fios separadores e linhas abaixo dos headings.],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Papéis cromáticos de uma paleta],
+  kind: table,
+)
+
+A faixa de cores de cada paleta abaixo mostra, da esquerda para a direita:
+*primária* (larga) · *secundária* · *fundo* · *sutil*.
+
+// ── helpers de visualização de paletas ───────────────────────────────────────
+
+#let _pc(nome, p) = block(
+  stroke: 0.4pt + luma(200), radius: 3pt, inset: 7pt, width: 100%,
+  {
+    text(size: 8pt, weight: "bold", font: "Linux Biolinum", raw(nome))
+    v(5pt)
+    box(clip: true, radius: 3pt, {
+      box(fill: p.primaria,   width: 1.8cm, height: 0.55cm)
+      h(0.6pt)
+      box(fill: p.secundaria, width: 1.2cm, height: 0.55cm)
+      h(0.6pt)
+      box(fill: p.fundo,      width: 0.8cm, height: 0.55cm)
+      h(0.6pt)
+      box(fill: p.sutil,      width: 0.8cm, height: 0.55cm)
+    })
+  }
+)
+
+#grid(
+  columns: (1fr, 1fr),
+  column-gutter: 10pt, row-gutter: 7pt,
+  _pc("paleta-marinho",  paleta-marinho),
+  _pc("paleta-vinho",    paleta-vinho),
+  _pc("paleta-bosque",   paleta-bosque),
+  _pc("paleta-pastel",   paleta-pastel),
+  _pc("paleta-petroleo",    paleta-petroleo),
+  _pc("paleta-solar",    paleta-solar),
+  _pc("paleta-ardosia",  paleta-ardosia),
+  _pc("paleta-lilas",    paleta-lilas),
+  _pc("paleta-grafite",  paleta-grafite),
+  _pc("paleta-festiva",  paleta-festiva),
+)
+
+== Estilos de Layout
+
+Cada estilo define como H1–H5 são renderizados: quais formas usam (faixa,
+barra, emblema, bloco…), a hierarquia tipográfica e as decorações. O mesmo
+estilo com paletas distintas produz documentos com personalidades visuais
+completamente diferentes.
+
+Para ver o resultado real de cada estilo, copie o bloco abaixo, cole num
+arquivo `.typ`, troque o tema na linha `#show:` e compile:
+
+```typst
+#import "@preview/ferrmat:0.1.0": *
+
+// Para tema-jornal-*, adicione também: #set page(columns: 2)
+#show: tema-periodico-marinho  // ← troque aqui
+
+#set page(paper: "a4", margin: (x: 3cm, y: 2.5cm))
+
+#let p = [
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
+]
+
+= Capítulo de Exemplo
+#p
+== Seção Principal
+#p
+=== Subseção de Conteúdo
+#p
+==== Subsubseção de Detalhe
+#p
+===== Parágrafo Nomeado
+#p
+====== Detalhe Mínimo
+#p
+```
+
+=== Estilo Periódico (`estilo-periodico`)
+
+Geométrico e sans-serif. H1 em faixa de fundo cheio com texto em caixa-alta;
+H2 com barra lateral espessa e fio separador; H3 em badge colorido. Forte
+contraste entre primária e secundária. Recomendado para relatórios técnicos,
+apresentações e materiais didáticos.
+
+*Temas disponíveis:* `tema-periodico-marinho` · `tema-periodico-petroleo` ·
+`tema-periodico-ardosia` · `tema-periodico-lilas` · `tema-periodico-bosque` · `tema-periodico-festiva`
+
+=== Estilo Jornal (`estilo-jornal`)
+
+Editorial de jornal impresso. H1 emoldurado por duas réguas horizontais com
+número decorativo grande e pálido à esquerda; H2 introduzido por uma linha
+fina acima; H3 em versalete com fio abaixo. Serifa (Linux Libertine). Ideal
+para boletins, newsletters e periódicos. H1 ocupa toda a largura da página,
+atravessando as duas colunas.
+
+*Temas disponíveis:* `tema-jornal-grafite` · `tema-jornal-vinho` · `tema-jornal-petroleo`
+
+=== Estilo Revista (`estilo-revista`)
+
+Editorial de revista ou livro ilustrado. H1 em painel duplo: quadrado de cor
+com número e quadrado de fundo com título; H2–H5 com barras laterais
+decrescentes (de ~1 cm em H2 até fina em H5). Serifa (Linux Libertine).
+Excelente para livros-texto, catálogos e publicações de prestígio.
+
+*Temas disponíveis:* `tema-revista-vinho` · `tema-revista-pastel` ·
+`tema-revista-lilas` · `tema-revista-grafite` · `tema-revista-bosque` · `tema-revista-festiva`
+
+=== Estilo Barras (`estilo-barras`)
+
+Lúdico e acolhedor. H1 em faixa com cantos arredondados; H2 dentro de uma
+caixa com borda arredondada; H3 com badge em forma de pílula. Sans-serif
+(Linux Biolinum). Ideal para apostilas infantis, cartilhas, materiais
+pedagógicos e jogos educativos.
+
+*Temas disponíveis:* `tema-barras-solar` · `tema-barras-pastel` ·
+`tema-barras-lilas` · `tema-barras-bosque` · `tema-barras-festiva`
+
+=== Estilo Universitário (`estilo-universitario`)
+
+Acadêmico e formal. H1 centralizado em caixa-alta com dupla régua horizontal
+abaixo (espessa + fina); H2 com número grande em destaque e sublinha curta;
+H3 em faixa de fundo suave; H4 e H5 em bloco itálico. Serifa (Linux
+Libertine). Adequado para monografias, teses, dissertações e artigos
+científicos.
+
+*Temas disponíveis:* `tema-universitario-marinho` · `tema-universitario-vinho` ·
+`tema-universitario-grafite` · `tema-universitario-bosque` · `tema-universitario-ardosia`
+
+=== Estilo Centralizado (`estilo-centralizado`)
+
+Tudo centralizado e simétrico. H1–H5 com linhas horizontais acima e abaixo
+do título que vão encolhendo a cada nível (de 90% em H1 até 14% em H5),
+criando uma hierarquia visual baseada em proporção. Sans-serif (Linux
+Biolinum). Para relatórios formais, capas e documentos cerimoniais.
+
+*Temas disponíveis:* `tema-centralizado-grafite` · `tema-centralizado-pastel` ·
+`tema-centralizado-ardosia` · `tema-centralizado-solar`
+
+=== Estilo Caos (`estilo-caos`)
+
+Caos controlado: cada nível usa uma linguagem visual completamente diferente.
+H1 em banda full-bleed com número fantasma; H2 com número gigante pálido ao
+lado e sublinhado; H3 em badge arredondado (estilo UI); H4 em pílula bicolor;
+H5 em caixa tracejada; H6 com símbolo decorativo. Sans-serif (Linux Biolinum).
+Para apresentações ousadas, portfólios, materiais criativos.
+
+*Temas disponíveis:* `tema-caos-grafite` · `tema-caos-festiva` ·
+`tema-caos-ardosia` · `tema-caos-lilas` · `tema-caos-solar`
+
+// ── USO ──────────────────────────────────────────────────────────────────────
+
+== Como Usar
+
+=== Tema pronto
+
+A forma mais simples: importe o tema e aplique com `#show:`.
+
+```typst
+#import "@preview/ferrmat:0.1.0": *
+
+#show: tema-revista-vinho
+```
+
+A numeração padrão é `"1.1"`. Para alterar:
+
+```typst
+#show: tema-revista-vinho.with(numeracao: "I")
+// ou numeracao: none  para remover a numeração
+```
+
+=== Combinação livre
+
+Qualquer paleta pode ser usada com qualquer estilo:
+
+```typst
+#import "@preview/ferrmat:0.1.0": *
+
+// estilo-revista com a paleta solar
+#show: estilo-revista.with(paleta-solar)
+
+// estilo-universitario com a paleta oceano e numeração romana
+#show: estilo-universitario.with(paleta-pastel, numeracao: "I.1")
+```
+
+=== Paleta personalizada
+
+Crie sua própria paleta como um dicionário com as cinco chaves obrigatórias:
+
+```typst
+#let minha-paleta = (
+  primaria:   rgb("#2d4a8a"),   // azul corporativo
+  secundaria: rgb("#e84a20"),   // laranja de acento
+  texto:      rgb("#1a1a2e"),   // quase-preto azulado
+  fundo:      rgb("#f0f4ff"),   // azul muito claro
+  sutil:      rgb("#c8d0e0"),   // cinza-azulado para linhas
+)
+
+#show: estilo-centralizado.with(minha-paleta)
+```
+
+=== Tabela de todos os temas disponíveis
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    stroke: none, inset: 5pt,
+    table.hline(stroke: 1pt),
+    [*Estilo*], [*Paleta*], [*Nome do tema*],
+    table.hline(stroke: 0.5pt),
+    [Periódico], [marinho],   [`tema-periodico-marinho`],
+    [],        [petróleo],  [`tema-periodico-petroleo`],
+    [],        [ardósia],   [`tema-periodico-ardosia`],
+    [],        [lilás],     [`tema-periodico-lilas`],
+    [],        [bosque],    [`tema-periodico-bosque`],
+    [],        [festiva],   [`tema-periodico-festiva`],
+    table.hline(stroke: 0.3pt),
+    [Jornal],  [grafite],   [`tema-jornal-grafite`],
+    [],        [vinho],     [`tema-jornal-vinho`],
+    [],        [petróleo],  [`tema-jornal-petroleo`],
+    table.hline(stroke: 0.3pt),
+    [Revista], [vinho],     [`tema-revista-vinho`],
+    [],        [pastel],    [`tema-revista-pastel`],
+    [],        [lilás],     [`tema-revista-lilas`],
+    [],        [grafite],   [`tema-revista-grafite`],
+    [],        [bosque],    [`tema-revista-bosque`],
+    [],        [festiva],   [`tema-revista-festiva`],
+    table.hline(stroke: 0.3pt),
+    [Barras],[solar],     [`tema-barras-solar`],
+    [],        [pastel],    [`tema-barras-pastel`],
+    [],        [lilás],     [`tema-barras-lilas`],
+    [],        [bosque],    [`tema-barras-bosque`],
+    [],        [festiva],   [`tema-barras-festiva`],
+    table.hline(stroke: 0.3pt),
+    [Universitário],[marinho],[`tema-universitario-marinho`],
+    [],        [vinho],     [`tema-universitario-vinho`],
+    [],        [grafite],   [`tema-universitario-grafite`],
+    [],        [bosque],    [`tema-universitario-bosque`],
+    [],        [ardósia],   [`tema-universitario-ardosia`],
+    table.hline(stroke: 0.3pt),
+    [Centralizado],[grafite],[`tema-centralizado-grafite`],
+    [],        [pastel],    [`tema-centralizado-pastel`],
+    [],        [ardósia],   [`tema-centralizado-ardosia`],
+    [],        [solar],     [`tema-centralizado-solar`],
+    table.hline(stroke: 0.3pt),
+    [Caos],    [grafite],   [`tema-caos-grafite`],
+    [],        [festiva],   [`tema-caos-festiva`],
+    [],        [ardósia],   [`tema-caos-ardosia`],
+    [],        [lilás],     [`tema-caos-lilas`],
+    [],        [solar],     [`tema-caos-solar`],
+    table.hline(stroke: 1pt),
+  ),
+  caption: [Todos os 34 temas prontos disponíveis em `src/temas.typ`],
+  kind: table,
+)
+
+// ============================================================================
 // PROVAS E TESTES
 // ============================================================================
 
