@@ -218,6 +218,35 @@ Wrappers em português para layout de colunas e grades.
 #grade(colunas: (1fr, 1fr), [Célula 1], [Célula 2])
 ```
 
+### Temas Visuais de Headings (`temas.typ`)
+
+Sistema completo de headings visuais baseado na combinação livre de **paletas de cores** e **estilos de layout** — 10 paletas × 7 estilos = 70 combinações possíveis, com 34 temas prontos de uso imediato.
+
+**Paletas disponíveis:** `paleta-marinho`, `paleta-vinho`, `paleta-bosque`, `paleta-pastel`, `paleta-petroleo`, `paleta-solar`, `paleta-ardosia`, `paleta-lilas`, `paleta-grafite`, `paleta-festiva`
+
+**Estilos disponíveis:** `estilo-periodico`, `estilo-jornal`, `estilo-revista`, `estilo-barras`, `estilo-universitario`, `estilo-centralizado`, `estilo-caos`
+
+```typst
+// Tema pronto (forma mais simples)
+#import "@preview/ferrmat:0.1.0": *
+#show: tema-revista-vinho
+
+// Combinação livre de paleta + estilo
+#show: estilo-universitario.with(paleta-pastel, numeracao: "I.1")
+
+// Paleta personalizada
+#let minha-paleta = (
+  primaria:   rgb("#2d4a8a"),
+  secundaria: rgb("#e84a20"),
+  texto:      rgb("#1a1a2e"),
+  fundo:      rgb("#f0f4ff"),
+  sutil:      rgb("#c8d0e0"),
+)
+#show: estilo-centralizado.with(minha-paleta)
+```
+
+**Temas prontos** (nome = `tema-{estilo}-{paleta}`): `tema-periodico-marinho`, `tema-periodico-petroleo`, `tema-periodico-ardosia`, `tema-periodico-lilas`, `tema-periodico-bosque`, `tema-periodico-festiva`, `tema-jornal-grafite`, `tema-jornal-vinho`, `tema-jornal-petroleo`, `tema-revista-vinho`, `tema-revista-pastel`, `tema-revista-lilas`, `tema-revista-grafite`, `tema-revista-bosque`, `tema-revista-festiva`, `tema-barras-solar`, `tema-barras-pastel`, `tema-barras-lilas`, `tema-barras-bosque`, `tema-barras-festiva`, `tema-universitario-marinho`, `tema-universitario-vinho`, `tema-universitario-grafite`, `tema-universitario-bosque`, `tema-universitario-ardosia`, `tema-centralizado-grafite`, `tema-centralizado-pastel`, `tema-centralizado-ardosia`, `tema-centralizado-solar`, `tema-caos-grafite`, `tema-caos-festiva`, `tema-caos-ardosia`, `tema-caos-lilas`, `tema-caos-solar`
+
 ### Cores em Português (`cores.typ`)
 
 Constantes de cores: `preto`, `branco`, `azul`, `vermelho`, `verde`, `amarelo`, `laranja`, `roxo`, `cinza`, `prata`, `azul-marinho`, `azul-petroleo`, `bordo`, `oliva`, `lima`, `agua`, `fucsia`, `oriental`

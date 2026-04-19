@@ -199,6 +199,8 @@ O Capítulo 1 introduz os conceitos básicos do Typst e do FerrMat. O Capítulo 
 
 O Capítulo 4 apresenta os fundamentos do modo matemático em Typst. O Capítulo 5 apresenta as funções matemáticas em português: letras gregas, frações, raízes, derivadas, integrais, matrizes e delimitadores. O Capítulo 6 cobre os ambientes matemáticos (teoremas, definições, demonstrações) com numeração configurável e estilos visuais. O Capítulo 7 aborda diagramas e gráficos com os pacotes `fletcher`, `cetz` e `cetz-plot`. O Capítulo 12 apresenta o módulo de anotações e notas marginais: notas TODO (`afazer`), notas marginais explicativas (`nota-margem`), placeholders de figuras e sistema de cores por autor.
 
+Um capítulo dedicado apresenta o módulo de *Temas Prontos de Headings* (`src/temas.typ`): uma arquitetura de paletas de cores × estilos de layout que gera 70 combinações possíveis, com 34 temas prontos de uso imediato para personalizar visualmente qualquer documento Typst.
+
 O Apêndice A contém tabelas de referência para todos os símbolos matemáticos em português fornecidos pelo FerrMat.
 
 #v(1cm)
